@@ -1,12 +1,20 @@
 package main
 import(
-  "fmt"
+  //"fmt"
   "log"
   "net/http"
+  "encoding/json"
 )
-
+type BasicData struct{
+  Lang string `json:"Lang"`
+  IntVal int32 `json:"numeric"`
+  RandomText string `json:"rtext"`
+}
 func basicData(w http.ResponseWriter, r *http.Request){
-  fmt.Fprintf(w,"Just hited the basicData endpoint")
+  data := BasicData{Lang: "Go",IntVal: 32,RandomText: "Idk somethink"}
+//  fmt.Fprintf(w,"Just hited the basicData endpoint")
+  json.NewEncoder(w).Encode(data)
+
 }
 
 func handleRequests(){
