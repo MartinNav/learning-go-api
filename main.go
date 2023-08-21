@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+  "database/sql"
+  _"github.com/go-sql-driver/mysql"
 )
+var db *sql.DB 
 type BasicData struct{
   Lang string `json:"Lang"`
   IntVal int32 `json:"numeric"`
@@ -27,6 +30,17 @@ func jsonDataCall(w http.ResponseWriter, r *http.Request){
     fmt.Fprint(w ,"\nYou found the he meaning of life, the universe, and everything")
   }
 }
+func dataFromDb(w http.ResponseWriter, r *http.Request){
+  res, err := db.Query("SELECT * FROM test_table")
+  defer res.Close()
+  if err!=nil{
+    fmt.Fprint(w,"Error while reading DB:\n",err)
+    return
+  }
+  fmt.Fprint(w, "Succes")
+  cols, err := res.Columns()
+  fmt.Fprint(w,cols)
+}
 
 func basicData(w http.ResponseWriter, r *http.Request){
   data := BasicData{Lang: "Go",IntVal: 32,RandomText: "Idk somethink"}
@@ -38,9 +52,16 @@ func basicData(w http.ResponseWriter, r *http.Request){
 func handleRequests(){
   http.HandleFunc("/basic-data",basicData)
   http.HandleFunc("/sdata", jsonDataCall)
+  http.HandleFunc("/rdb", dataFromDb)
   log.Fatal(http.ListenAndServe(":8080",nil))
 }
 
 func main(){
+  var err error
+  db, err =sql.Open("mysql", "root@tcp(127.0.0.1:3306)/go_db")
+  if err != nil{
+    log.Fatal(err)
+  }
   handleRequests()
+defer db.Close()
 }
