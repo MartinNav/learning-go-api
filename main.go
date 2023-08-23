@@ -40,6 +40,16 @@ func dataFromDb(w http.ResponseWriter, r *http.Request){
   fmt.Fprint(w, "Succes")
   cols, err := res.Columns()
   fmt.Fprint(w,cols)
+for res.Next(){
+    var(id int
+      name string
+      last_name string)
+    err:=res.Scan(&id,&name,&last_name)
+    if err!=nil{
+      return
+    }
+    fmt.Fprint(w , "{\nid:",id,"\nname:\"",name,"\"\nlast_name:\"",last_name,"\"\n}")
+  }
 }
 
 func basicData(w http.ResponseWriter, r *http.Request){
