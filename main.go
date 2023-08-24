@@ -18,6 +18,11 @@ type ClientData struct{
   Id uint32 `json:"id"`
   Desc string `json:"desc"`
 }
+type DBData struct{
+  Id uint32 `json:"id"`
+  Name string `json:"name"`
+  LastName string `json:"last_name"`
+}
 func jsonDataCall(w http.ResponseWriter, r *http.Request){
   var cd ClientData
   err := json.NewDecoder(r.Body).Decode(&cd)
@@ -37,19 +42,16 @@ func dataFromDb(w http.ResponseWriter, r *http.Request){
     fmt.Fprint(w,"Error while reading DB:\n",err)
     return
   }
-  fmt.Fprint(w, "Succes")
-  cols, err := res.Columns()
-  fmt.Fprint(w,cols)
+  fmt.Fprint(w,"{\n")
 for res.Next(){
-    var(id int
-      name string
-      last_name string)
-    err:=res.Scan(&id,&name,&last_name)
+    var dat DBData
+    err:=res.Scan(&dat.Id,&dat.Name,&dat.LastName)
     if err!=nil{
       return
     }
-    fmt.Fprint(w , "{\nid:",id,"\nname:\"",name,"\"\nlast_name:\"",last_name,"\"\n}")
+  json.NewEncoder(w).Encode(dat)
   }
+  fmt.Fprint(w , "}")
 }
 
 func basicData(w http.ResponseWriter, r *http.Request){
