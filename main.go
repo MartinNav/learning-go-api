@@ -36,6 +36,9 @@ func jsonDataCall(w http.ResponseWriter, r *http.Request){
   }
 }
 func dataFromDb(w http.ResponseWriter, r *http.Request){
+
+
+  if r.Method == http.MethodGet{
   res, err := db.Query("SELECT * FROM test_table")
   defer res.Close()
   if err!=nil{
@@ -52,7 +55,21 @@ for res.Next(){
   json.NewEncoder(w).Encode(dat)
   }
   fmt.Fprint(w , "}")
-}
+  } else if r.Method == http.MethodPost{//TODO: test if works
+    var data DBData
+    err := json.NewDecoder(r.Body).Decode(data)
+    if err != nil{
+      fmt.Fprint(w,"ERROR: Unable to decode data")
+      return 
+    }
+    v, err:= db.Query("INSERT INTO test_table VALUES(?, ?, ?)", data.Id,data.Name,data.LastName)
+    if err!=nil{
+      fmt.Fprint(w, "DB write failed")
+    return
+    }
+    fmt.Fprint(w,"Data saved sucesfully")
+  }
+  }
 
 func basicData(w http.ResponseWriter, r *http.Request){
   data := BasicData{Lang: "Go",IntVal: 32,RandomText: "Idk somethink"}
