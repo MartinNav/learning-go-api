@@ -57,7 +57,7 @@ for res.Next(){
   fmt.Fprint(w , "}")
   } else if r.Method == http.MethodPost{//TODO: test if works
     var data DBData
-    err := json.NewDecoder(r.Body).Decode(data)
+    err := json.NewDecoder(r.Body).Decode(&data)
     if err != nil{
       fmt.Fprint(w,"ERROR: Unable to decode data")
       return 
@@ -67,7 +67,7 @@ for res.Next(){
       fmt.Fprint(w, "DB write failed")
     return
     }
-    fmt.Fprint(w,"Data saved sucesfully")
+    fmt.Fprint(w,"Data saved sucesfully",v)
   }
   }
 
