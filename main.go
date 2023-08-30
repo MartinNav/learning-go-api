@@ -112,6 +112,7 @@ func handleRequests(){
   http.HandleFunc("/basic-data",basicData)
   http.HandleFunc("/sdata", jsonDataCall)
   http.HandleFunc("/rdb", dataFromDb)
+  http.HandleFunc("/sdb", selectInRange)
   log.Fatal(http.ListenAndServe(":8080",nil))
 }
 
