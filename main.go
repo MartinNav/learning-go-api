@@ -23,11 +23,35 @@ type DBData struct{
   Name string `json:"name"`
   LastName string `json:"last_name"`
 }
-type SelectedRange struct{
+type SelRange struct{
   Start uint32 `json:"start"`
   End uint32 `json:"end"`
 }
 
+func selectInRange(w http.ResponseWriter, r *http.Request){
+var rang SelRange
+  err:=json.NewDecoder(r.Body).Decode(&rang)
+  if err!=nil{
+    http.Error(w , "Wrong parameters", 400)
+  return
+  }
+    v, err:= db.Query("SELECT * FROM test_table WHERE id > ? AND id < ?", rang.Start,rang.End)
+defer v.Close()
+if err!=nil{
+    http.Error(w , "Error while reading data from DB", 500)
+    return
+  }
+
+for v.Next(){
+    var dat DBData
+    err:=v.Scan(&dat.Id,&dat.Name,&dat.LastName)
+    if err!=nil{
+      return
+    }
+  json.NewEncoder(w).Encode(dat)
+  }
+
+}
 
 func jsonDataCall(w http.ResponseWriter, r *http.Request){
   var cd ClientData
