@@ -23,6 +23,12 @@ type DBData struct{
   Name string `json:"name"`
   LastName string `json:"last_name"`
 }
+type SelectedRange struct{
+  Start uint32 `json:"start"`
+  End uint32 `json:"end"`
+}
+
+
 func jsonDataCall(w http.ResponseWriter, r *http.Request){
   var cd ClientData
   err := json.NewDecoder(r.Body).Decode(&cd)
